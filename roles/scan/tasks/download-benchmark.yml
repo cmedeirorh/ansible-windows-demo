@@ -1,0 +1,18 @@
+---
+
+- block:
+  - name: Ensure benchmark file is downloaded
+    ansible.windows.win_get_url:
+      url: "{{ scap_benchmark_content_download_url }}"
+      dest: '{{ temp_dir }}\{{ scap_benchmark_content_file_name }}'
+
+  - name: Ensure the benchmark content is extracted
+    community.windows.win_unzip:
+      src: '{{ temp_dir }}\{{ scap_benchmark_content_file_name }}'
+      dest: '{{ openscap_install_dir }}\'
+
+  always:
+    - name: Ensure the temporary files are removed
+      ansible.windows.win_file:
+        path: '{{ temp_dir }}\{{ scap_benchmark_content_file_name }}'
+        state: absent

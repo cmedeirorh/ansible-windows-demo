@@ -1,0 +1,8 @@
+---
+- name: "Windows Demo: Deploy SQL Servers"
+  hosts: all
+  gather_facts: true
+  connection: local
+
+  roles:
+    - sql

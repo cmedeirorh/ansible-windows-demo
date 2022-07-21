@@ -1,0 +1,14 @@
+---
+- name: Ensure email is send with report
+  ansible.builtin.mail:
+    host: "{{ mail_host }}"
+    port: "{{ mail_port }}"
+    username: "{{ mail_username }}"
+    password: "{{ mail_password }}"
+    from: "compliance@ansible.show"
+    to: "{{ mail_to | default('security@acme.corp') }}"
+    subject: "[Ansible] Windows Hardening Scan"
+    body: "{{ lookup('template', 'report.html.j2') }}"
+    subtype: html
+  delegate_to: localhost
+  become: no

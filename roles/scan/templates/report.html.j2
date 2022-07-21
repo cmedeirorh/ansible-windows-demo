@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="background-color: #f1f5f9; padding: 24px; text-align: center; font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+    <table style="margin-left: auto; margin-right: auto" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+            <td>
+                <h1 style="padding-left: 16px; padding-right: 16px; font-size: 24px; line-height: 100%; color: #0f172a">OpenSCAP Evaluation Report</h1>
+            </td>
+        </tr>
+    </table>
+    {% for host in ansible_play_hosts_all %}
+    {% if hostvars[host].openscap_scan_results is defined %}
+    {% set openscap_scan_results = hostvars[host].openscap_scan_results %}
+    {% set total_count =  openscap_scan_results.total_rules_count | int %}
+    {% set passed_count = openscap_scan_results.rule_results_count.pass | int %}
+    {% set failed_count = openscap_scan_results.rule_results_count.fail | int %}
+    {% set other_count =  total_count - passed_count - failed_count | int %}
+    {% set low_severity_count =  openscap_scan_results.severity_of_failed_rules_count.low | int %}
+    {% set medium_severity_count =  openscap_scan_results.severity_of_failed_rules_count.medium | int %}
+    {% set high_severity_count =  openscap_scan_results.severity_of_failed_rules_count.high | int %}
+    {% set security_compliance =  hostvars[host].security_compliance %}
+    <div role="separator" style="line-height: 16px">&zwnj;</div>
+
+    <table style="margin-left: auto; margin-right: auto; width: 100%; max-width: 400px; border-radius: 12px; background-color: #fff; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+            <td>
+                <svg viewBox="0 0 24 24" style="height: 32px; width: 32px">
+                    <path fill="currentColor" d="M3,12V6.75L9,5.43V11.91L3,12M20,3V11.75L10,11.9V5.21L20,3M3,13L9,13.09V19.9L3,18.75V13M20,13.25V22L10,20.09V13.1L20,13.25Z"></path>
+                </svg>
+                <h3 style="margin: 0; padding-bottom: 8px; font-size: 18px; color: #1e293b">{{ host }}</h3>
+                <span style="font-size: 12px; font-weight: 600; color: #475569">
+                    {{ hostvars[host].ansible_distribution }}
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table style="width: 100%" cellpadding="0" cellspacing="0" role="presentation">
+                    <tr>
+                        <td style="padding-top: 16px; text-align: left">
+                            <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em; color: #374151">Compliance:</span>
+                            {% if security_compliance is defined and security_compliance.status %}
+                            <span style="border-radius: 4px; background-color: #86efac; padding-left: 8px; padding-right: 8px; padding-top: 4px; padding-bottom: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #166534">pass</span>
+                            {% else %}
+                            <span style="border-radius: 4px; background-color: #fca5a5; padding-left: 8px; padding-right: 8px; padding-top: 4px; padding-bottom: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #991b1b">fail</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding-top: 16px; text-align: right">
+                            <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em; color: #374151">Score:</span>
+                            <span style="font-size: 14px">{{ openscap_scan_results.score }}</span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-top: 24px; padding-bottom: 24px">
+                <h4 style="margin: 0">Rule Results</h4>
+                <table style="width: 100%; table-layout: fixed" cellpadding="0" cellspacing="0" role="presentation">
+                    <tr>
+                        <td style="padding-top: 4px; padding-bottom: 4px">
+                            <span style="font-size: 14px; font-weight: 600; text-transform: uppercase; color: #374151">fail</span>
+                            <div style="display: inline-block; height: 12px; width: 12px; background-color: #ef4444"></div>
+                        </td>
+                        <td style="padding-top: 4px; padding-bottom: 4px">
+                            <span style="font-size: 14px; font-weight: 600; text-transform: uppercase; color: #374151">pass</span>
+                            <div style="display: inline-block; height: 12px; width: 12px; background-color: #22c55e"></div>
+                        </td>
+                        <td style="padding-top: 4px; padding-bottom: 4px">
+                            <span style="font-size: 14px; font-weight: 600; text-transform: uppercase; color: #374151">other</span>
+                            <div style="display: inline-block; height: 12px; width: 12px; background-color: #eab308"></div>
+                        </td>
+                    </tr>
+                </table>
+                <table style="width: 100%; overflow: hidden; border-radius: 8px" cellpadding="0" cellspacing="0" role="presentation">
+                    <tr>
+                        <td style="width: {{ failed_count / total_count * 100 }}%; background-color: #ef4444; padding-top: 4px; padding-bottom: 4px; font-size: 14px; color: #fff">{{ failed_count }}</td>
+                        <td style="width: {{ passed_count / total_count * 100 }}%; background-color: #22c55e; padding-top: 4px; padding-bottom: 4px; font-size: 14px; color: #fff">{{ passed_count }}</td>
+                        <td style="width: {{ other_count / total_count * 100 }}%; background-color: #eab308; padding-top: 4px; padding-bottom: 4px; font-size: 14px; color: #fff">{{ other_count }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h4 style="margin: 0">Severity of Failed Rules</h4>
+                <table style="width: 100%; table-layout: fixed" cellpadding="0" cellspacing="0" role="presentation">
+                    <tr>
+                        <td style="padding-top: 4px; padding-bottom: 4px">
+                            <span style="font-size: 14px; font-weight: 600; text-transform: uppercase; color: #374151">low</span>
+                            <div style="display: inline-block; height: 12px; width: 12px; background-color: #3b82f6"></div>
+                        </td>
+                        <td style="padding-top: 4px; padding-bottom: 4px">
+                            <span style="font-size: 14px; font-weight: 600; text-transform: uppercase; color: #374151">medium</span>
+                            <div style="display: inline-block; height: 12px; width: 12px; background-color: #eab308"></div>
+                        </td>
+                        <td style="padding-top: 4px; padding-bottom: 4px">
+                            <span style="font-size: 14px; font-weight: 600; text-transform: uppercase; color: #374151">high</span>
+                            <div style="display: inline-block; height: 12px; width: 12px; background-color: #ef4444"></div>
+                        </td>
+                    </tr>
+                </table>
+                <table style="width: 100%; overflow: hidden; border-radius: 8px" cellpadding="0" cellspacing="0" role="presentation">
+                    <tr>
+                        <td style="width: {{ low_severity_count / failed_count * 100 }}%; background-color: #3b82f6; padding-top: 4px; padding-bottom: 4px; font-size: 14px; color: #fff">{{ low_severity_count }}</td>
+                        <td style="width: {{ medium_severity_count / failed_count * 100 }}%; background-color: #eab308; padding-top: 4px; padding-bottom: 4px; font-size: 14px; color: #fff">{{ medium_severity_count }}</td>
+                        <td style="width: {{ high_severity_count / failed_count * 100 }}%; background-color: #ef4444; padding-top: 4px; padding-bottom: 4px; font-size: 14px; color: #fff">{{ high_severity_count }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    {% endif %}
+    {% endfor %}
+</body>
+</html>

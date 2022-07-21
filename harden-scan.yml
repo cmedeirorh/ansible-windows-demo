@@ -1,0 +1,8 @@
+---
+- name: "Windows Demo: Server Hardening Scan"
+  hosts: all
+  gather_facts: true
+  connection: local
+
+  roles:
+    - scan

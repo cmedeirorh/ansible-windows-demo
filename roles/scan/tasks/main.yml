@@ -1,0 +1,15 @@
+---
+- ansible.builtin.include_tasks: install.yml
+
+- name: "Ensure benchmark file exists"
+  ansible.windows.win_stat:
+    path: '{{ openscap_install_dir }}\{{ scap_benchmark_content_file_name | replace(".zip", ".xml") }}'
+  register: benchmark_file
+
+- ansible.builtin.include_tasks: download-benchmark.yml
+  when: not benchmark_file.stat.exists
+
+- ansible.builtin.include_tasks: scan.yml
+
+- ansible.builtin.include_tasks: email.yml
+  run_once: true

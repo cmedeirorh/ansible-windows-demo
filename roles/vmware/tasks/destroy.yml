@@ -1,0 +1,8 @@
+---
+- name: Ensure that all machines are destroyed
+  community.vmware.vmware_guest:
+    validate_certs: false
+    name: "{{ inventory_hostname }}"
+    state: absent
+    force: true
+  delegate_to: localhost

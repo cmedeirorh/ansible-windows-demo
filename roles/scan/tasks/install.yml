@@ -1,0 +1,27 @@
+---
+- block:
+  - name: "Ensure OpenSCAP prerequisites are installed"
+    ansible.windows.win_package:
+      path: "{{ openscap_prereq_download_url }}"
+      product_id: '{D5AEE36E-4771-4F65-BDB6-8C59077BFBE4}'
+      arguments:
+        - /S
+    failed_when: false
+
+  - name: "Ensure OpenSCAP is downloaded"
+    ansible.windows.win_get_url:
+      url: "{{ openscap_download_url }}"
+      dest: '{{ temp_dir }}\OpenSCAP-{{ openscap_version }}-win32.msi'
+
+  - name: "Ensure OpenSCAP is installed"
+    ansible.windows.win_package:
+      path: '{{ temp_dir }}\OpenSCAP-{{ openscap_version }}-win32.msi'
+      arguments:
+        - /quiet
+        - /norestart
+
+  always:
+    - name: "Ensure the temporary installer file is removed"
+      ansible.windows.win_file:
+        path: '{{ temp_dir }}\OpenSCAP-{{ openscap_version }}-win32.msi'
+        state: absent

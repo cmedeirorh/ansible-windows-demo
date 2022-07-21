@@ -1,0 +1,95 @@
+---
+- name: Ensure a SQL admin user exists
+  ansible.windows.win_user:
+    name: "{{ mssql_username }}"
+    password: "{{ mssql_password }}"
+    password_never_expires: true
+    state: present
+    groups:
+      - Administrators
+
+- name: Ensure that .net framework is installed
+  ansible.windows.win_feature:
+    name: "{{ item }}"
+    include_management_tools: true
+    include_sub_features: true
+    state: present
+  loop:
+    - NET-Framework-Core
+    - NET-Framework-Features
+  register: install_dotnet
+  until: install_dotnet is success
+  delay: 3
+  retries: 5
+
+- name: Ensure the directory structure exists
+  win_file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "C:\\Backup"
+    - "C:\\Databases"
+    - "C:\\UserDatabases"
+
+- name: Ensure the ISO file has not been downloaded yet
+  ansible.windows.win_stat:
+    path: "{{ iso_path }}"
+  register: iso_file
+  when: ( ":" in iso_path )
+
+- name: Ensure the ISO file is downloaded
+  ansible.windows.win_get_url:
+    dest: "{{ iso_path }}"
+    url: "{{ iso_url }}"
+  register: download_iso
+  until: download_iso is success
+  delay: 3
+  retries: 5
+  when: ( ":" in iso_path ) and ( not iso_file.stat.exists )
+
+- name: Ensure the ISO is mounted
+  community.windows.win_disk_image:
+    image_path: "{{ iso_path }}"
+    state: present
+  register: disk_image
+
+- name: "Ensure SQL Server 2019 is installed with selected method: {{ install_with }}"
+  ansible.builtin.include_tasks:
+    file: "{{ install_with }}.yml"
+
+- name: Ensure the ISO is unmounted after installation
+  community.windows.win_disk_image:
+    image_path: "{{ iso_path }}"
+    state: absent
+
+- name: Reboot the system if required after installation
+  ansible.windows.win_reboot:
+  when:
+    - sql_install is defined
+    - sql_install.reboot_required is defined
+    - sql_install.reboot_required
+
+- name: Ensure the system is reachable before proceeding
+  ansible.builtin.wait_for_connection:
+    delay: 15
+    timeout: 120
+  when: sql_install.reboot_required
+
+- name: Copy the enable_sql_tcp.ps1 script to the server
+  ansible.windows.win_copy:
+    src: enable_sql_tcp.ps1
+    dest: "C:\\enable_sql_tcp.ps1"
+
+- name: Execute the enable_sql_tcp.ps1 script on the server
+  ansible.windows.win_shell: "C:\\enable_sql_tcp.ps1"
+
+- name: Ensure the enable_sql_tcp.ps1 script is removed
+  ansible.windows.win_file:
+    path: "C:\\enable_sql_tcp.ps1"
+    state: absent
+
+- name: Ensure the SQL Server service is restarted
+  ansible.windows.win_service:
+    name: MSSQLSERVER
+    state: restarted
+    force_dependent_services: true

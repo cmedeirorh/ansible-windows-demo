@@ -1,0 +1,59 @@
+---
+- name: Ensure that AD-Domain-Services are installed
+  ansible.windows.win_feature:
+    name: AD-Domain-Services
+    include_management_tools: true
+    include_sub_features: true
+    state: present
+  register: winfeature
+
+- name: Reboot if required by feature installation
+  ansible.windows.win_reboot:
+  when: winfeature.changed
+
+- name: Ensure domain is created
+  ansible.windows.win_domain:
+    dns_domain_name: "ansible.local"
+    safe_mode_password: "{{ ansible_password }}"
+  register: windomain
+
+- name: Reboot if required by domain creation
+  ansible.windows.win_reboot:
+  when: windomain.changed
+
+- name: Wait for Active Directory Web Services port
+  ansible.windows.win_wait_for:
+    host: localhost
+    port: 9389
+    timeout: 600
+
+- name: Ensure that Active Directory Services are started
+  ansible.windows.win_service:
+    name: "{{ item }}"
+    start_mode: auto
+    state: started
+  loop:
+    - dns
+    - adws
+
+- name: Ensure Ansible Users group exists
+  community.windows.win_domain_group:
+    name: Ansible Users
+    scope: global
+
+- name: Ensure Admin domain users exists
+  community.windows.win_domain_user:
+    name: "Admin"
+    upn: "Admin@ansible.local"
+    state: present
+    enabled: true
+    account_locked: false
+    groups:
+      - Domain Admins
+    password: "{{ ansible_password }}"
+    update_password: on_create
+    password_expired: false
+    firstname: admin
+    surname: user
+    company: AnsibleByRedHat
+    email: "admin@ansible.local"

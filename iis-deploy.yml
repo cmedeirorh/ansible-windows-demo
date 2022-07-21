@@ -1,0 +1,8 @@
+---
+- name: "Windows Demo: Deploy IIS Servers"
+  hosts: all
+  gather_facts: false
+  connection: local
+
+  roles:
+    - iis

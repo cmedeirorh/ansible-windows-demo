@@ -1,0 +1,13 @@
+---
+# - name: Ensure that extra software is installed
+#   chocolatey.chocolatey.win_chocolatey:
+#     name:
+#       - googlechrome
+#     state: present
+
+- name: Ensure that Google Chrome is installed
+  ansible.windows.win_package:
+    path: "https://files.ansible.show/software/chrome.msi"
+    arguments:
+      - /Q
+    state: present

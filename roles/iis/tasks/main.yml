@@ -1,0 +1,34 @@
+---
+- name: Ensure IIS Web-Server is installed with sub features and management tools
+  ansible.windows.win_feature:
+    name: Web-Server
+    include_management_tools: true
+    include_sub_features: true
+    state: present
+    restart: true
+
+- name: Ensure that the site directories are created
+  ansible.windows.win_file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - 'C:\Sites'
+    - 'C:\Sites\Demo'
+    - 'C:\Sites\Logs'
+
+- name: Ensure that the Demo site is configured
+  community.windows.win_iis_website:
+    name: Default Web Site
+    state: started
+    physical_path: 'C:\Sites\Demo'
+    parameters: logfile.directory:C:\Sites\Logs
+    port: 80
+  register: website
+
+- name: Ensure the index.html file is deployed
+  ansible.windows.win_template:
+    src: "templates/index.php.j2"
+    dest: 'C:\Sites\Demo\index.php'
+
+- name: "Include the PHP role"
+  ansible.builtin.include_tasks: php.yml

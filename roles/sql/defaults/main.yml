@@ -1,0 +1,8 @@
+---
+product_id: "{17DCED0E-5B27-453A-B2B4-E487B869B28A}"
+install_with: win_package
+iso_path: "{{ ansible_env.TEMP }}\\sql2019.iso"
+# iso_url: https://download.microsoft.com/download/8/4/c/84c6c430-e0f5-476d-bf43-eaaa222a72e0/SQLServer2019-x64-ENU.iso
+iso_url: https://files.ansible.show/software/sql2019.iso
+mssql_username: ansible
+mssql_password: "{{ ansible_password }}"

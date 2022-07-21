@@ -1,0 +1,83 @@
+---
+- name: Ensure the PHP archive has not been downloaded yet
+  ansible.windows.win_stat:
+    path: 'C:\php.zip'
+  register: php_zip_file
+
+- name: Ensure that PHP is downloaded
+  ansible.windows.win_get_url:
+    dest: "C:\\php.zip"
+    url: "https://files.ansible.show/php/php.zip"
+  register: download_php
+  until: download_php is success
+  delay: 3
+  retries: 5
+  when: not php_zip_file.stat.exists
+
+- name: Ensure the PHP archive is extracted
+  community.windows.win_unzip:
+    src: 'C:\php.zip'
+    dest: 'C:\PHP'
+    creates: 'C:\PHP'
+
+- name: Ensure the php.ini configuration file is deployed
+  ansible.windows.win_template:
+    src: "templates/php.ini.j2"
+    dest: 'C:\PHP\php.ini'
+
+- name: Ensure that the PHP directory is in the system path
+  ansible.windows.win_path:
+    elements: 'C:\PHP\'
+
+- name: Ensure the current PHP handlers are cleared
+  ansible.windows.win_shell: C:\Windows\System32\inetsrv\appcmd.exe {{ item }}
+  ignore_errors: true
+  loop:
+    - clear config -section:system.webServer/fastCGI
+    - set config -section:system.webServer/handlers /-"[name='PHP_via_FastCGI']"
+
+- name: Ensure the current PHP handlers are setup
+  ansible.windows.win_shell: C:\Windows\System32\inetsrv\appcmd.exe {{ item }}
+  loop:
+    - set config -section:system.webServer/fastCGI /+"[fullPath='C:\PHP\php-cgi.exe']"
+    - set config -section:system.webServer/handlers /+"[name='PHP_via_FastCGI',path='*.php',verb='*',modules='FastCgiModule',scriptProcessor='C:\PHP\php-cgi.exe',resourceType='Unspecified']"  # yamllint disable-line rule:line-length
+    - set config -section:system.webServer/handlers /accessPolicy:Read,Script
+    - set config -section:system.webServer/fastCGI /+"[fullPath='C:\PHP\php-cgi.exe'].environmentVariables.[name='PHPRC',value='C:\PHP\php.ini']"
+
+- name: Ensure that index.php is available as a handler
+  ansible.windows.win_shell: |
+    $file = "index.php"
+    $baseFilter = "/system.webServer/defaultDocument/files"
+
+    $filter = "{0}/add[@value='{1}']" -f $baseFilter,$file
+    $fileExists = $null -ne (Get-WebConfigurationProperty $filter -Name ".")
+    $updateConfig = -not $fileExists
+    if ( $fileExists ) {
+      $firstValue = Get-WebConfiguration "$baseFilter/*" |
+        Select-Object -ExpandProperty value -First 1
+      $updateConfig = $firstValue -ne $file
+      if ( $updateConfig ) {
+        Clear-WebConfiguration $filter -Verbose
+      }
+    }
+    if ( $updateConfig ) {
+      Add-WebConfiguration $baseFilter -AtIndex 0 -Value @{value = $file} -Verbose
+    }
+
+- name: Check if composer.phar has been downloaded
+  ansible.windows.win_stat:
+    path: 'C:\PHP\composer.phar'
+  register: composer_file
+
+- name: Ensure that composer.phar is downloaded
+  ansible.windows.win_get_url:
+    dest: 'C:\PHP\composer.phar'
+    url: 'https://files.ansible.show/php/composer.phar'
+  register: download_composer
+  until: download_composer is success
+  delay: 3
+  retries: 5
+  when: not composer_file.stat.exists
+
+- name: Setup global composer execution
+  ansible.windows.win_shell: Set-Content C:\PHP\composer.bat '@php "%~dp0composer.phar" %*'

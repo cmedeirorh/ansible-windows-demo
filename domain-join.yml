@@ -1,0 +1,8 @@
+---
+- name: "Windows Demo: Join Servers to the Domain"
+  hosts: all
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - ansible.builtin.import_tasks: "roles/domain/tasks/join.yml"
