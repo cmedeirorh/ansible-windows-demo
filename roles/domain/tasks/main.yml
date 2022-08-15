@@ -13,7 +13,7 @@
 
 - name: Ensure domain is created
   ansible.windows.win_domain:
-    dns_domain_name: "ansible.local"
+    dns_domain_name: "{{ dns_domain_name }}"
     safe_mode_password: "{{ ansible_password }}"
   register: windomain
 
@@ -44,7 +44,7 @@
 - name: Ensure Admin domain users exists
   community.windows.win_domain_user:
     name: "Admin"
-    upn: "Admin@ansible.local"
+    upn: "Admin@{{ dns_domain_name }}"
     state: present
     enabled: true
     account_locked: false
@@ -56,4 +56,4 @@
     firstname: admin
     surname: user
     company: AnsibleByRedHat
-    email: "admin@ansible.local"
+    email: "admin@{{ dns_domain_name }}"
