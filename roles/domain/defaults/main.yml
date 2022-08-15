@@ -1,2 +1,3 @@
 ---
+domain_controller_hostname: ""
 dns_domain_name: "ansible.local"
