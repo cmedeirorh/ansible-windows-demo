@@ -11,4 +11,4 @@
     body: "{{ lookup('template', 'report.html.j2') }}"
     subtype: html
   delegate_to: localhost
-  become: no
+  become: false

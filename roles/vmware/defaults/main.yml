@@ -1,0 +1,10 @@
+---
+vm_template: "/Central/vm/Ansible/Nick A/Templates/WINDOWS_SERVER_2019"
+vm_folder: "/Central/vm/Ansible/Nick A/Demos"
+vm_datacenter: "Central"
+vm_cluster: "Tigers"
+
+vm_network: "Nick"
+vm_netmask: "255.255.255.0"
+vm_gateway: "10.1.19.1"
+vm_dns: "10.1.19.1"

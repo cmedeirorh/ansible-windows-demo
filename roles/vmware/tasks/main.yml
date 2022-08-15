@@ -1,22 +1,22 @@
 ---
 - name: Ensure that inventory machines are deployed
   community.vmware.vmware_guest:
-    template: "/Central/vm/Ansible/Nick A/Templates/WINDOWS_SERVER_2019"
-    folder: "/Central/vm/Ansible/Nick A/Demos"
+    template: "{{ vm_template }}"
+    folder: "{{ vm_folder }}"
     name: "{{ inventory_hostname }}"
     wait_for_ip_address: true
-    datacenter: "Central"
+    datacenter: "{{ vm_datacenter }}"
     validate_certs: false
-    cluster: "Tigers"
+    cluster: "{{ vm_cluster }}"
     state: poweredon
     networks:
-      - name: "Nick"
+      - name: "{{ vm_network }}"
         type: static
         ip: "{{ ansible_host }}"
-        netmask: 255.255.255.0
-        gateway: 10.1.19.1
+        netmask: "{{ vm_netmask }}"
+        gateway: "{{ vm_gateway }}"
         dns_servers:
-          - 10.1.19.1
+          - "{{ vm_dns }}"
     customization:
       password: "{{ ansible_password }}"
       autologoncount: 10
