@@ -3,7 +3,7 @@
   ansible.windows.win_dns_client:
     adapter_names: "*"
     ipv4_addresses:
-      - {{ dns_server }}
+      - "{{ dns_server }}"
 
 - name: Ensure that the host is joined to the domain
   ansible.windows.win_domain_membership:
