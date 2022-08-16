@@ -30,7 +30,7 @@
 - name: Wait for the system to respond to management
   ansible.builtin.wait_for:
     host: "{{ ansible_host }}"
-    port: "5985"
+    port: "{{ ansible_port }}"
     delay: 60
     timeout: 900
   when: vminfo.changed
