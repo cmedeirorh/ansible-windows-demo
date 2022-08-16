@@ -10,7 +10,7 @@
     path: "{{ item.path }}"
     arguments: "{{ item.arguments }}"
     state: present
-  loop: software
+  loop: "{{ software }}"
 
 # - name: Ensure that the NetXMS agent is installed
 #   ansible.windows.win_package:
