@@ -5,21 +5,17 @@
 #       - googlechrome
 #     state: present
 
-- name: Debug to test
-  ansible.builtin.debug:
-    var: software
-
-- name: Ensure that Google Chrome is installed
+- name: Ensure that software is installed
   ansible.windows.win_package:
-    path: "{{ chrome_url }}"
-    arguments:
-      - /Q
+    path: "{{ item.path }}"
+    arguments: "{{ item.arguments }}"
     state: present
+  loop: software
 
-- name: Ensure that the NetXMS agent is installed
-  ansible.windows.win_package:
-    path: "{{ nxagent_url }}"
-    arguments:
-      - /SERVER=0.0.0.0/0
-      - /VERYSILENT
-    state: present
+# - name: Ensure that the NetXMS agent is installed
+#   ansible.windows.win_package:
+#     path: "{{ nxagent_url }}"
+#     arguments:
+#       - /SERVER=0.0.0.0/0
+#       - /VERYSILENT
+#     state: present
