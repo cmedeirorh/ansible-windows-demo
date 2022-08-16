@@ -5,6 +5,10 @@
 #       - googlechrome
 #     state: present
 
+- name: Debug to test
+  ansible.builtin.debug:
+    var: software
+
 - name: Ensure that Google Chrome is installed
   ansible.windows.win_package:
     path: "{{ chrome_url }}"
@@ -16,5 +20,6 @@
   ansible.windows.win_package:
     path: "{{ nxagent_url }}"
     arguments:
+      - /SERVER=0.0.0.0/0
       - /VERYSILENT
     state: present
