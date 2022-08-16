@@ -1,3 +1,3 @@
 ---
 chrome_url: "https://files.ansible.show/software/chrome.msi"
-netxms_url: "https://files.ansible.show/software/netxms.exe"
+nxagent_url: "https://files.ansible.show/software/nxagent.exe"

@@ -14,7 +14,7 @@
 
 - name: Ensure that the NetXMS agent is installed
   ansible.windows.win_package:
-    path: "{{ netxms_url }}"
+    path: "{{ nxagent_url }}"
     arguments:
       - /VERYSILENT
     state: present
