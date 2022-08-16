@@ -7,7 +7,7 @@
 
 - name: Ensure that Google Chrome is installed
   ansible.windows.win_package:
-    path: "https://files.ansible.show/software/chrome.msi"
+    path: "{{ chrome_url }}"
     arguments:
       - /Q
     state: present
