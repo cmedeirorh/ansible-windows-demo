@@ -45,4 +45,4 @@
         data:
           name: "{{ item.name }}"
           primary_ip4: "{{ ip_address.ip_address.address }}"
-  when: interface.interface.cound_ipaddresses == 0
+  when: interface.interface.count_ipaddresses == 0
