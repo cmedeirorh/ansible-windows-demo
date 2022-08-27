@@ -1,0 +1,10 @@
+---
+network_prefix: "10.0.21.0/24"
+
+ipam_hosts:
+  - name: ARIO-WIN-DC
+    role: "Domain Controller"
+  - name: ARIO-WIN-IIS
+    role: "IIS Webserver"
+  - name: ARIO-WIN-SQL
+    role: "MSSQL Database"

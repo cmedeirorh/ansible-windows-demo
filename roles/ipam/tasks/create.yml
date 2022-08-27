@@ -1,0 +1,40 @@
+---
+- name: "Ensure that virtual machine is created in Netbox"
+  netbox.netbox.netbox_virtual_machine:
+    data:
+      name: "{{ item.name }}"
+      virtual_machine_role: "{{ item.role }}"
+      platform: "Windows Server 2019"
+      cluster: "ARIO Lab"
+      memory: 1024
+      vcpus: 1
+      disk: 60
+    state: present
+  register: virtual_machine
+
+- name: "Ensure that the virtual machine has a primary network interface"
+  netbox.netbox.netbox_vm_interface:
+    data:
+      virtual_machine: "{{ item.name }}"
+      name: "Ethernet0"
+    state: present
+  register: interface
+
+- name: "Ensure that the interface has an IP provisioned"
+  block:
+    - name: "Allocate a new IP address from Netbox for Ethernet0"
+      netbox.netbox.netbox_ip_address:
+        data:
+          prefix: "{{ network_prefix }}"
+          assigned_object:
+            virtual_machine: "{{ item.name }}"
+            name: "Ethernet0"
+        state: new
+      register: ip_address
+
+    - name: "Ensure that the new allocation is assigned as the primary VM IP address"
+      netbox.netbox.netbox_virtual_machine:
+        data:
+          name: "{{ item.name }}"
+          primary_ip4: "{{ ip_address.ip_address.address }}"
+  when: interface.interface.cound_ipaddresses == 0

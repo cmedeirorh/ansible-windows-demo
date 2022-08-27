@@ -1,0 +1,7 @@
+---
+- name: "Send each host through the create task"
+  ansible.builtin.include_tasks: "create.yml"
+  loop: "{{ ipam_hosts }}"
+
+- name: "Ensure the inventory is synced"
+  ansible.builtin.meta: refresh_inventory
