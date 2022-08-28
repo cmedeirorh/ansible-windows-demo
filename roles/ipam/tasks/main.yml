@@ -3,5 +3,39 @@
   ansible.builtin.include_tasks: "create.yml"
   loop: "{{ ipam_hosts }}"
 
-- name: "Ensure the inventory is synced"
-  ansible.builtin.meta: refresh_inventory
+- name: "Retrieve the inventory source ID for Netbox"
+  ansible.builtin.uri:
+    url: "https://{{ lookup('ansible.builtin.env', 'TOWER_HOST') }}/api/v2/inventory_sources?name=Netbox&source_path=inventories/netbox.yml&page_size=1"
+    force_basic_auth: true
+    user: "{{ lookup('ansible.builtin.env', 'TOWER_USERNAME') }}"
+    password: "{{ lookup('ansible.builtin.env', 'TOWER_PASSWORD') }}"
+    validate_certs: false
+    method: "GET"
+  register: inventory_source_lookup
+
+- name: "Trigger an update on the inventory source"
+  ansible.builtin.uri:
+    url: "https://{{ lookup('ansible.builtin.env', 'TOWER_HOST') }}{{ inventory_source_lookup.json.results.0.related['update'] }}"
+    force_basic_auth: true
+    user: "{{ lookup('ansible.builtin.env', 'TOWER_USERNAME') }}"
+    password: "{{ lookup('ansible.builtin.env', 'TOWER_PASSWORD') }}"
+    validate_certs: false
+    method: "POST"
+    status_code:
+      - 202
+  register: inventory_update_request
+
+- name: "Ensure that the syncronization has completed successfully"
+  ansible.builtin.uri:
+    url: "https://{{ lookup('ansible.builtin.env', 'TOWER_HOST') }}{{ inventory_update_request.json.related['inventory_source'] }}"
+    force_basic_auth: true
+    user: "{{ lookup('ansible.builtin.env', 'TOWER_USERNAME') }}"
+    password: "{{ lookup('ansible.builtin.env', 'TOWER_PASSWORD') }}"
+    validate_certs: false
+    method: "GET"
+    status_code:
+      - 200
+  register: syncronization_status
+  until: syncronization_status.json.status == "successful"
+  retries: 5
+  delay: 3
