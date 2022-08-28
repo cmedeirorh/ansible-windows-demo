@@ -11,6 +11,8 @@
       memory: 1024
       vcpus: 1
       disk: 60
+      tags:
+        - "windows-demo"
     state: present
   register: virtual_machine
 
