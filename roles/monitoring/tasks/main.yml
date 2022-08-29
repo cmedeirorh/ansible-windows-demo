@@ -1,4 +1,16 @@
 ---
+- name: "Ensure that ICMP echo is permitted in the firewall"
+  community.windows.win_firewall_rule:
+    name: "ICMP Echo Requests"
+    localport: 1433
+    action: allow
+    direction: in
+    protocol: icmpv4
+    enabled: true
+    state: present
+    icmp_type_code:
+      - '8:*'
+
 - name: "Fetch the Demo container's information to designate where to place the hosts"
   ansible.builtin.uri:
     url: "{{ lookup('ansible.builtin.env', 'NETXMS_API') }}/objects?class=container&name=demo&parent=2"
