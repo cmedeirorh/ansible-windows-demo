@@ -2,7 +2,6 @@
 - name: "Ensure that ICMP echo is permitted in the firewall"
   community.windows.win_firewall_rule:
     name: "ICMP Echo Requests"
-    localport: 1433
     action: allow
     direction: in
     protocol: icmpv4
