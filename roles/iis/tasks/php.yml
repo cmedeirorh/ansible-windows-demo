@@ -7,7 +7,7 @@
 - name: Ensure that PHP is downloaded
   ansible.windows.win_get_url:
     dest: "C:\\php.zip"
-    url: "https://files.ansible.show/php/php.zip"
+    url: "{{ php_path }}"
   register: download_php
   until: download_php is success
   delay: 3
@@ -72,7 +72,7 @@
 - name: Ensure that composer.phar is downloaded
   ansible.windows.win_get_url:
     dest: 'C:\PHP\composer.phar'
-    url: 'https://files.ansible.show/php/composer.phar'
+    url: "{{ composer_path }}"
   register: download_composer
   until: download_composer is success
   delay: 3
