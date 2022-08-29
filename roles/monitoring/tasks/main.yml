@@ -1,0 +1,38 @@
+---
+- name: "Fetch the Demo container's information to designate where to place the hosts"
+  ansible.builtin.uri:
+    url: "{{ lookup('ansible.builtin.env', 'NETXMS_API') }}/objects?class=container&name=demo&parent=2"
+    force_basic_auth: true
+    user: "{{ lookup('ansible.builtin.env', 'NETXMS_USERNAME') }}"
+    password: "{{ lookup('ansible.builtin.env', 'NETXMS_PASSWORD') }}"
+    validate_certs: false
+    method: "GET"
+  register: container_request
+  delegate_to: localhost
+
+- name: "Ensure the important information is extracted from the JSON response"
+  ansible.builtin.set_fact:
+    parent_container: "{{ dict(['id', 'name'] | zip(['objectId', 'objectName'] | map('extract', container_request.json.objects.0))) }}"
+
+- name: "Ensure that the host is added into monitoring"
+  ansible.builtin.uri:
+    url: "{{ lookup('ansible.builtin.env', 'NETXMS_API') }}/objects"
+    force_basic_auth: true
+    user: "{{ lookup('ansible.builtin.env', 'NETXMS_USERNAME') }}"
+    password: "{{ lookup('ansible.builtin.env', 'NETXMS_PASSWORD') }}"
+    validate_certs: false
+    method: "POST"
+    body_format: json
+    status_code:
+      - 200
+      - 400
+    body: |
+      {
+        "parentId": "{{ parent_container.id }}",
+        "primaryName": "{{ ansible_host }}",
+        "name": "{{ inventory_hostname }}",
+        "objectType": "2"
+      }
+  register: creation_request
+  changed_when: creation_request.status == 200
+  delegate_to: localhost
