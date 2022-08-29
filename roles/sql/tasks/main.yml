@@ -102,5 +102,4 @@
     direction: in
     protocol: tcp
     enabled: true
-    profiles: private
     state: present
