@@ -8,3 +8,5 @@ ipam_hosts:
     role: "IIS Webserver"
   - name: ARIO-WIN-SQL
     role: "MSSQL Database"
+
+vmsize: Large

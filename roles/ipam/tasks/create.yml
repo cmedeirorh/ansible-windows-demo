@@ -8,8 +8,8 @@
       virtual_machine_role: "{{ item.role }}"
       platform: "Windows Server 2019"
       cluster: "ARIO Lab"
-      memory: 1024
-      vcpus: 1
+      memory: "{{ vm_sizes[vmsize].ram }}"
+      vcpus: "{{ vm_sizes[vmsize].cpu }}"
       disk: 60
       tags:
         - "windows-demo"
