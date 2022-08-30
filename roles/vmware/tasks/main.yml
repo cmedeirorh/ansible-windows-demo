@@ -9,6 +9,9 @@
     validate_certs: false
     cluster: "{{ vm_cluster }}"
     state: poweredon
+    hardware:
+      memory_mb: "{{ vm_sizes[vmsize].ram }}"
+      num_cpus: "{{ vm_sizes[vmsize].cpu }}"
     networks:
       - name: "{{ vm_network }}"
         type: static
