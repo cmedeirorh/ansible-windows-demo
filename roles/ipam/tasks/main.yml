@@ -1,4 +1,8 @@
 ---
+- name: "Debug testing"
+  ansible.builtin.debug:
+    msg: "{{ lookup('ansible.builtin.env', 'TOWER_USERNAME') }}"
+
 - name: "Send each host through the create task"
   ansible.builtin.include_tasks: "create.yml"
   loop: "{{ ipam_hosts }}"
