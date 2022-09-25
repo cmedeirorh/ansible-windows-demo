@@ -1,9 +1,7 @@
 ---
 software:
   - path: "https://files.ario.house/software/chrome.msi"
-    arguments:
-      - /silent
-      - /install
+    arguments: /q /n
 
   - path: "https://files.ario.house/software/nxagent.exe"
     arguments:
