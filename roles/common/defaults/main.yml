@@ -1,3 +1,11 @@
 ---
-chrome_url: "https://files.ansible.show/software/chrome.msi"
-nxagent_url: "https://files.ansible.show/software/nxagent.exe"
+software:
+  - path: "https://files.ario.house/software/chrome.msi"
+    arguments:
+      - /silent
+      - /install
+
+  - path: "https://files.ario.house/software/nxagent.exe"
+    arguments:
+      - /SERVER=0.0.0.0/0
+      - /VERYSILENT
