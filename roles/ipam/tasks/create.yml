@@ -2,7 +2,7 @@
 - name: "Ensure that virtual machine is created in Netbox"
   netbox.netbox.netbox_virtual_machine:
     netbox_token: "{{ lookup('ansible.builtin.env', 'NETBOX_TOKEN') }}"
-    netbox_url: "{{ lookup('ansible.builtin.env', 'NETBOX_API') }}"
+    netbox_url: "{{ lookup('ansible.builtin.env', 'NETBOX_URL') }}"
     data:
       name: "{{ item.name }}"
       virtual_machine_role: "{{ item.role }}"
@@ -19,7 +19,7 @@
 - name: "Ensure that the virtual machine has a primary network interface"
   netbox.netbox.netbox_vm_interface:
     netbox_token: "{{ lookup('ansible.builtin.env', 'NETBOX_TOKEN') }}"
-    netbox_url: "{{ lookup('ansible.builtin.env', 'NETBOX_API') }}"
+    netbox_url: "{{ lookup('ansible.builtin.env', 'NETBOX_URL') }}"
     data:
       virtual_machine: "{{ item.name }}"
       name: "Ethernet0"
@@ -31,7 +31,7 @@
     - name: "Allocate a new IP address from Netbox for Ethernet0"
       netbox.netbox.netbox_ip_address:
         netbox_token: "{{ lookup('ansible.builtin.env', 'NETBOX_TOKEN') }}"
-        netbox_url: "{{ lookup('ansible.builtin.env', 'NETBOX_API') }}"
+        netbox_url: "{{ lookup('ansible.builtin.env', 'NETBOX_URL') }}"
         data:
           prefix: "{{ network_prefix }}"
           assigned_object:
@@ -43,7 +43,7 @@
     - name: "Ensure that the new allocation is assigned as the primary VM IP address"
       netbox.netbox.netbox_virtual_machine:
         netbox_token: "{{ lookup('ansible.builtin.env', 'NETBOX_TOKEN') }}"
-        netbox_url: "{{ lookup('ansible.builtin.env', 'NETBOX_API') }}"
+        netbox_url: "{{ lookup('ansible.builtin.env', 'NETBOX_URL') }}"
         data:
           name: "{{ item.name }}"
           primary_ip4: "{{ ip_address.ip_address.address }}"
