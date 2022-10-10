@@ -38,7 +38,7 @@
 
 - name: Ensure Ansible Users group exists
   community.windows.win_domain_group:
-    name: Ansible Users
+    name: "{{ item }}"
     scope: global
   loop:
     - "Ansible Superusers"
