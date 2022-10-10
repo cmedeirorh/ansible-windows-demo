@@ -38,4 +38,4 @@
   register: syncronization_status
   until: syncronization_status.json.status == "successful"
   retries: 5
-  delay: 3
+  delay: 10
