@@ -35,6 +35,6 @@
     host: "{{ ansible_host }}"
     port: "{{ ansible_port }}"
     delay: 60
-    timeout: 900
+    timeout: 1200
   when: vminfo.changed
   delegate_to: localhost
