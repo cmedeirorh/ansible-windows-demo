@@ -40,6 +40,10 @@
   community.windows.win_domain_group:
     name: Ansible Users
     scope: global
+  loop:
+    - "Ansible Superusers"
+    - "Ansible Users"
+    - "Webservers"
 
 - name: Ensure Admin domain users exists
   community.windows.win_domain_user:
