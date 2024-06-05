@@ -1,0 +1,21 @@
+---
+collections:
+  - name: ansible.controller
+  - name: redhat_cop.controller_configuration
+  - name: ansible.posix
+  - name: redhat.insights
+  - name: redhat.rhel_system_roles
+  - name: community.general
+  - name: containers.podman
+  - name: chocolatey.chocolatey
+  - name: community.windows
+  - name: ansible.windows
+  - name: azure.azcollection
+  - name: amazon.aws
+  - name: redhat.satellite
+  - name: cisco.ios
+  - name: cisco.nxos
+  - name: cisco.iosxr
+  - name: ansible.netcommon
+  - name: redhat.openshift
+  - name: community.windows
