@@ -6,7 +6,7 @@
       - Web-Common-Http
     include_management_tools: true
     include_sub_features: true
-    state: started
+    state: present
     restart: true
   register: win_feature
 
