@@ -9,6 +9,12 @@
     state: present
     restart: true
   register: win_feature
+  
+- name: Set service startup mode to auto and ensure it is started
+  ansible.windows.win_service:
+    name: W3SVC
+    start_mode: auto
+    state: started  
 
 - name: Ensure that the site directories are created
   ansible.windows.win_file:
@@ -35,7 +41,3 @@
 
 - name: "Include the PHP role"
   ansible.builtin.include_tasks: php.yml
-
-#- name: Reboot if installing Web-Server feature requires it
-#  ansible.windows.win_reboot:
-#  when: win_feature.reboot_required  
