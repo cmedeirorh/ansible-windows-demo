@@ -8,7 +8,7 @@
     include_sub_features: true
     state: present
     restart: true
-    register: win_feature
+  register: win_feature
 
 - name: Ensure that the site directories are created
   ansible.windows.win_file:
