@@ -6,7 +6,7 @@
       - Web-Common-Http
     include_management_tools: true
     include_sub_features: true
-    state: present
+    state: started
     restart: true
   register: win_feature
 
@@ -36,6 +36,6 @@
 - name: "Include the PHP role"
   ansible.builtin.include_tasks: php.yml
 
-- name: Reboot if installing Web-Server feature requires it
-  ansible.windows.win_reboot:
-  when: win_feature.reboot_required  
+#- name: Reboot if installing Web-Server feature requires it
+#  ansible.windows.win_reboot:
+#  when: win_feature.reboot_required  
