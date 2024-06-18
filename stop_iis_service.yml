@@ -5,5 +5,5 @@
   tasks:
   - name: Stop W3SVC Service
     ansible.windows.win_service:
-    name: W3SVC
-    state: stopped
+      name: W3SVC
+      state: stopped
