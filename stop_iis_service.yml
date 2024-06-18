@@ -1,0 +1,9 @@
+---
+- name: Stop Service for Demo
+  hosts: windows
+
+  tasks:
+  - name: Stop W3SVC Service
+    ansible.windows.win_service:
+    name: W3SVC
+    state: stopped
